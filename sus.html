@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <title>SUS Küsimustik</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 30px auto; }
+    .question { margin-bottom: 20px; }
+    label { margin-right: 12px; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Süsteemi Kasutatavuse Küsimustik (SUS)</h1>
+  <form id="susForm">
+    <div id="questions"></div>
+    <button type="submit">Saada vastused</button>
+  </form>
+  <p id="thanks" style="display:none; font-weight:bold;">Aitäh! Sinu vastused on salvestatud.</p>
+
+  <script>
+    const questions = [
+      "Ma arvan, et kasutaksin seda süsteemi tihti.",
+      "Süsteem tundus ebavajalikult keeruline.",
+      "Süsteem oli lihtne kasutada.",
+      "Vajaksin tehnilise inimese abi selle kasutamiseks.",
+      "Süsteemi funktsioonid on hästi integreeritud.",
+      "Süsteemis oli liiga palju vastuolusid.",
+      "Ma kujutan ette, et enamik inimesi õpiks selle kiiresti selgeks.",
+      "Süsteem tundus kohmakas kasutada.",
+      "Olin süsteemi kasutamisel enesekindel.",
+      "Pidin enne süsteemi kasutamist palju õppima."
+    ];
+
+    const entryIDs = [
+      "entry.873432293",
+      "entry.1227329686",
+      "entry.837422658",
+      "entry.1552756832",
+      "entry.588203777",
+      "entry.2051461827",
+      "entry.1995030438",
+      "entry.1340926774",
+      "entry.38393872",
+      "entry.960918005"
+    ];
+
+    const formActionURL = "https://docs.google.com/forms/d/e/1FAIpQLSeic4HnzQ8TuDMcRQzoCEz-ICTY8WocB4m3JOP2GnjlECfVvw/formResponse";
+
+    const container = document.getElementById("questions");
+    const form = document.getElementById("susForm");
+
+    questions.forEach((text, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<p>${i + 1}. ${text}</p>`;
+      for (let j = 1; j <= 5; j++) {
+        div.innerHTML += `
+          <label>
+            <input type="radio" name="q${i}" value="${j}" required> ${j}
+          </label>
+        `;
+      }
+      container.appendChild(div);
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const data = new FormData();
+      questions.forEach((_, i) => {
+        const val = document.querySelector(`input[name="q${i}"]:checked`).value;
+        data.append(entryIDs[i], val);
+      });
+
+      fetch(formActionURL, {
+        method: "POST",
+        mode: "no-cors",
+        body: data
+      });
+
+      form.style.display = "none";
+      document.getElementById("thanks").style.display = "block";
+    });
+  </script>
+</body>
+</html>
